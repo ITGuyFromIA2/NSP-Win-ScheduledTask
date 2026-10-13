@@ -7,7 +7,7 @@ imports on a bare host. Part of the `NSP.Win.*` family.
 | Function | Purpose |
 |---|---|
 | `New-NSPScheduledTaskDefinition` | The task as data: a PowerShell script or command (run by Windows PowerShell 5.1 with `-NoProfile -NonInteractive -ExecutionPolicy Bypass`) or any program; SYSTEM, a gMSA (`DOMAIN\name$`), or a user with `-Credential`; triggers; time limit, overlap rule, wake-to-run. |
-| `New-NSPEventTaskTrigger` | An "on an event" trigger from a log + event ID (+ provider), or a full event query - e.g. Sysmon event 11 to run a job when a file lands. |
+| `New-NSPEventTaskTrigger` | An "on an event" trigger from a log + event ID (+ provider), or a full event query - e.g. Sysmon event 11 to run a job when a file lands (the Sysmon side: `NSP.Win.Sysmon`). |
 | `Register-NSPScheduledTask` | Create or replace the task from a definition (elevated). |
 | `Test-NSPScheduledTask` | Compare the installed task with a definition: `Exists`, `InSync`, and one line per difference. |
 
