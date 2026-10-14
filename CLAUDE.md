@@ -4,7 +4,7 @@
 
 `NSP.Win.ScheduledTask`: scheduled-task definitions, registration, and drift checks. Part of the
 `NSP.Win.*` family. First consumer: the setup of `NSP-PoSHToolkits\NSP-FileTransfer` jobs.
-`NSP-ConditionalAccess` has its own private task registration that could move here.
+`NSP-M365-ConditionalAccess` has its own private task registration that could move here.
 
 ## Hard rules
 
