@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.1 (2026-11-02)
 
 - Add optional event value queries and compare event/repetition/start-when-available task drift.
 
