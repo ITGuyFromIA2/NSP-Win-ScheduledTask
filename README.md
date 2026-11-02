@@ -37,3 +37,12 @@ $nightly | Register-NSPScheduledTask          # make it so
 
 Pester 5+. Nothing is registered: Register-ScheduledTask and Get-ScheduledTask are mocked, and the
 task objects are real ones built offline by the ScheduledTasks cmdlets.
+
+## Event parameters
+
+`New-NSPEventTaskTrigger -ValueQuery @{ EventRecordId = 'Event/System/EventRecordID' }`
+adds named event XPath values. Use the corresponding literal Task Scheduler variable in an
+action argument, for example `-EventRecordId "$(EventRecordId)"`. Read and validate that exact
+event in the receiver; avoid treating event filenames as PowerShell command text. Omitting
+ValueQuery preserves the existing trigger. No task is registered by the trigger builder.
+Drift checks now include event values/delay, repetition settings and StartWhenAvailable.

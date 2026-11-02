@@ -1,6 +1,6 @@
 @{
     RootModule = 'NSP.Win.ScheduledTask.psm1'
-    ModuleVersion = '0.1.0'
+    ModuleVersion = '0.1.1'
     GUID = '641a2a46-caa9-4b8d-bd7d-57de66ecc21d'
     Author = 'Network Systems Plus'
     CompanyName = 'Network Systems Plus'
@@ -21,7 +21,7 @@
             Tags = @('ScheduledTask', 'TaskScheduler', 'gMSA', 'Automation', 'Windows', 'NSP')
             ProjectUri = 'https://github.com/ITGuyFromIA2/NSP-Win-ScheduledTask'
             LicenseUri = 'https://github.com/ITGuyFromIA2/NSP-Win-ScheduledTask/blob/main/LICENSE'
-            ReleaseNotes = '0.1.0: first release. Task definitions (PowerShell file/command or any program; SYSTEM, gMSA, or user), event-log triggers, register, drift check.'
+            ReleaseNotes = '0.1.1: Optional event ValueQuery and expanded event/repetition/start-when-available drift checks.'
         }
     }
 }

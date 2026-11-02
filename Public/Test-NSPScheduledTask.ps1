@@ -49,6 +49,7 @@ function Test-NSPScheduledTask {
         & $check 'Time limit' ([Xml.XmlConvert]::ToString($d.ExecutionTimeLimit)) $task.Settings.ExecutionTimeLimit
         & $check 'Multiple instances' $d.MultipleInstances $task.Settings.MultipleInstances
         & $check 'Wake to run' $d.WakeToRun ([bool]$task.Settings.WakeToRun)
+        & $check 'Start when available' $d.StartWhenAvailable ([bool]$task.Settings.StartWhenAvailable)
 
         $want = @($d.Trigger)
         $have = @($task.Triggers)
@@ -60,9 +61,16 @@ function Test-NSPScheduledTask {
                 & $check "$label enabled" ([bool]$want[$i].Enabled) ([bool]$have[$i].Enabled)
                 if ($want[$i].CimClass.CimClassName -eq 'MSFT_TaskEventTrigger') {
                     & $check "$label event query" $want[$i].Subscription $have[$i].Subscription
+                    $wantQueries = @($want[$i].ValueQueries | ForEach-Object { '{0}={1}' -f $_.Name,$_.Value } | Sort-Object)
+                    $haveQueries = @($have[$i].ValueQueries | ForEach-Object { '{0}={1}' -f $_.Name,$_.Value } | Sort-Object)
+                    & $check "$label event values" ($wantQueries -join "`n") ($haveQueries -join "`n")
+                    & $check "$label delay" $want[$i].Delay $have[$i].Delay
                 } elseif ($want[$i].StartBoundary -and $have[$i].StartBoundary) {
                     # Compare the time of day: the date part is just the first run.
                     & $check "$label time" ([datetime]$want[$i].StartBoundary).ToString('HH:mm:ss') ([datetime]$have[$i].StartBoundary).ToString('HH:mm:ss')
+                }
+                foreach ($field in 'Interval','Duration','StopAtDurationEnd') {
+                    & $check "$label repetition $field" $want[$i].Repetition.$field $have[$i].Repetition.$field
                 }
                 if ($want[$i].PSObject.Properties['DaysInterval']) { & $check "$label days interval" $want[$i].DaysInterval $have[$i].DaysInterval }
             }

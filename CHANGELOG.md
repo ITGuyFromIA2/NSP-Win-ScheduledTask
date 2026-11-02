@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add optional event value queries and compare event/repetition/start-when-available task drift.
+
 ## 0.1.0 (unreleased)
 
 - `New-NSPScheduledTaskDefinition`, `Register-NSPScheduledTask`, `Test-NSPScheduledTask`: one

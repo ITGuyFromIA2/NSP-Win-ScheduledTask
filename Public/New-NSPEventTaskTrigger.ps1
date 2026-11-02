@@ -10,6 +10,9 @@ function New-NSPEventTaskTrigger {
 
         A common use: Sysmon event 11 (FileCreate) on a watched folder, to run a job as soon as a
         file lands.
+    .PARAMETER ValueQuery
+        Optional map of names to event XPath expressions. Task actions can reference these
+        named values; omitting the map preserves existing behavior.
     .EXAMPLE
         New-NSPEventTaskTrigger -LogName 'Microsoft-Windows-Sysmon/Operational' -EventId 11 -Provider 'Microsoft-Windows-Sysmon'
     .EXAMPLE
@@ -23,7 +26,8 @@ function New-NSPEventTaskTrigger {
         [Parameter(Mandatory, ParameterSetName = 'Event')][int[]]$EventId,
         [Parameter(ParameterSetName = 'Event')][string]$Provider,
         [Parameter(Mandatory, ParameterSetName = 'Subscription')][string]$Subscription,
-        [timespan]$Delay
+        [timespan]$Delay,
+        [System.Collections.IDictionary]$ValueQuery
     )
 
     if ($PSCmdlet.ParameterSetName -eq 'Event') {
@@ -35,10 +39,24 @@ function New-NSPEventTaskTrigger {
     }
     try { [void][xml]$Subscription } catch { throw "Subscription is not valid XML: $($_.Exception.Message)" }
 
+    $queries = @()
+    if ($ValueQuery) {
+        foreach ($name in $ValueQuery.Keys) {
+            if ([string]$name -notmatch '^[A-Za-z_][A-Za-z0-9_]*$') { throw 'Value-query names must be identifiers.' }
+            $xpath = [string]$ValueQuery[$name]
+            if ([string]::IsNullOrWhiteSpace($xpath)) { throw 'Value-query XPath cannot be empty.' }
+            try { $null = [Xml.XPath.XPathExpression]::Compile($xpath) } catch { throw 'Invalid value-query XPath.' }
+        }
+        $valueClass = Get-CimClass -ClassName MSFT_TaskNamedValue -Namespace 'Root/Microsoft/Windows/TaskScheduler' -ErrorAction Stop
+        $queries = @(foreach ($name in @($ValueQuery.Keys | Sort-Object)) {
+            New-CimInstance -CimClass $valueClass -ClientOnly -Property @{Name=[string]$name; Value=[string]$ValueQuery[$name]}
+        })
+    }
     $class = Get-CimClass -ClassName MSFT_TaskEventTrigger -Namespace 'Root/Microsoft/Windows/TaskScheduler' -ErrorAction Stop
     $trigger = New-CimInstance -CimClass $class -ClientOnly
     $trigger.Enabled = $true
     $trigger.Subscription = $Subscription
+    if ($queries.Count) { $trigger.ValueQueries = [ciminstance[]]$queries }
     if ($Delay) { $trigger.Delay = [Xml.XmlConvert]::ToString($Delay) }
     $trigger
 }
